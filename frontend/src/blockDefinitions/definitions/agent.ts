@@ -1,8 +1,8 @@
 import type { BlockDefinition } from '../types'
-import { User } from 'lucide-react'
+import { Bot } from 'lucide-react'
 
 export const agentDefinition: BlockDefinition = {
   id: 'agent',
   label: 'Agent',
-  Icon: User,
+  Icon: Bot,
 }

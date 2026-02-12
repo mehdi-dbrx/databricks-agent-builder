@@ -3,12 +3,17 @@ import { agentDefinition } from './definitions/agent'
 import { genieDefinition } from './definitions/genie'
 import { vectorSearchDefinition } from './definitions/vectorSearch'
 import { mcpDefinition } from './definitions/mcp'
+import { lakebaseMemoryDefinition } from './definitions/lakebaseMemory'
+import { appsDefinition } from './definitions/apps'
+import { knowledgeAssistantDefinition } from './definitions/knowledgeAssistant'
+import { multiAgentSupervisorDefinition } from './definitions/multiAgentSupervisor'
 
 export const allBlockDefinitions: BlockDefinition[] = [
   agentDefinition,
   genieDefinition,
   vectorSearchDefinition,
   mcpDefinition,
+  lakebaseMemoryDefinition,
 ]
 
 const byId: Record<BlockTypeId, BlockDefinition> = {
@@ -16,6 +21,10 @@ const byId: Record<BlockTypeId, BlockDefinition> = {
   genie: genieDefinition,
   vectorSearch: vectorSearchDefinition,
   mcp: mcpDefinition,
+  lakebaseMemory: lakebaseMemoryDefinition,
+  apps: appsDefinition,
+  knowledgeAssistant: knowledgeAssistantDefinition,
+  multiAgentSupervisor: multiAgentSupervisorDefinition,
 }
 
 export function getBlockDefinition(id: BlockTypeId): BlockDefinition {

@@ -5,13 +5,13 @@ import {
   Controls,
   MiniMap,
   addEdge,
-  useNodesState,
-  useEdgesState,
   useReactFlow,
   type Connection,
   type Edge,
   type Node,
   type NodeTypes,
+  type OnNodesChange,
+  type OnEdgesChange,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
@@ -23,20 +23,23 @@ const nodeTypes: NodeTypes = {
   block: BlockNode,
 }
 
-const initialNodes: Node[] = [
-  {
-    id: '1',
-    type: 'block',
-    position: { x: 200, y: 120 },
-    data: { blockType: 'agent', label: 'Agent' },
-  },
-]
+interface FlowCanvasProps {
+  nodes: Node[]
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>
+  edges: Edge[]
+  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>
+  onNodesChange: OnNodesChange
+  onEdgesChange: OnEdgesChange
+}
 
-const initialEdges: Edge[] = []
-
-export function FlowCanvas() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+export function FlowCanvas({
+  nodes,
+  setNodes,
+  edges,
+  setEdges,
+  onNodesChange,
+  onEdgesChange,
+}: FlowCanvasProps) {
   const { screenToFlowPosition } = useReactFlow()
 
   const onConnect = useCallback(
