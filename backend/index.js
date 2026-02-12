@@ -10,8 +10,30 @@ const PORT = process.env.PORT || 3001
 
 app.use(express.json())
 
+const PYTHON_GATEWAY_URL = process.env.PYTHON_GATEWAY_URL || 'http://127.0.0.1:3002'
+
 app.get('/health', (req, res) => {
   res.json({ ok: true })
+})
+
+app.get('/api/genie/get', async (req, res) => {
+  const spaceId = req.query.space_id
+  if (!spaceId || typeof spaceId !== 'string') {
+    return res.status(400).json({ error: 'Query parameter "space_id" is required' })
+  }
+  const url = `${PYTHON_GATEWAY_URL}/genie/get?space_id=${encodeURIComponent(spaceId)}`
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) })
+    const data = await response.json().catch(() => ({}))
+    if (process.env.DEBUG) {
+      console.log('[backend] /api/genie/get proxy status=', response.status, 'keys=', data && typeof data === 'object' ? Object.keys(data) : [])
+    }
+    res.status(response.status).json(data)
+  } catch (err) {
+    if (process.env.DEBUG) console.log('[backend] /api/genie/get error:', err.message)
+    const status = err.name === 'TimeoutError' ? 504 : 503
+    res.status(status).json({ error: 'Genie service unavailable' })
+  }
 })
 
 app.get('/api/me', async (req, res) => {

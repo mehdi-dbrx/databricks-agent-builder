@@ -84,8 +84,9 @@ export function FlowCanvas({
         nodeTypes={nodeTypes}
         fitView
         className="bg-zinc-100"
+        proOptions={{ hideAttribution: true }}
       >
-        <Background color="#f9ada8" gap={16} />
+        <Background color="#f9ada8" gap={11} />
         <Controls className="!shadow-sm !border-zinc-200 !bg-white" />
         <MiniMap
           className="!bg-white !border-zinc-200"

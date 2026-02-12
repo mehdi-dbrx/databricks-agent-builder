@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useNodesState, useEdgesState } from '@xyflow/react'
 import type { Node, Edge } from '@xyflow/react'
+import { NodeSettingsContext } from './contexts/NodeSettingsContext'
 import { FlowCanvas } from './components/FlowCanvas'
+import { BlockSettingsModal } from './components/BlockSettingsModal'
 import { ProjectMenu } from './components/ProjectMenu'
 import { SettingsPanel } from './components/SettingsPanel'
 import { Sidebar } from './components/Sidebar'
+import type { BlockNodeData } from './components/nodes/BlockNode'
 import databricksIcon from './assets/icons/databricks-symbol-color.svg'
 
 const API_BASE = import.meta.env.VITE_API_BASE || ''
@@ -22,11 +25,18 @@ const initialEdges: Edge[] = []
 
 export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [settingsNodeId, setSettingsNodeId] = useState<string | null>(null)
   const [currentProject, setCurrentProject] = useState<string | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [saveLoading, setSaveLoading] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+
+  const openNodeSettings = useCallback((nodeId: string) => setSettingsNodeId(nodeId), [])
+  const nodeSettingsContextValue = { openNodeSettings }
+  const settingsNode = settingsNodeId
+    ? (nodes.find((n) => n.id === settingsNodeId) as Node<BlockNodeData> | undefined)
+    : undefined
 
   useEffect(() => {
     if (!currentProject) return
@@ -100,18 +110,26 @@ export default function App() {
       </header>
       <main className="flex-1 min-h-0 flex">
         <Sidebar onOpenSettings={() => setSettingsOpen(true)} />
-        <ReactFlowProvider>
-          <FlowCanvas
-            nodes={nodes}
-            setNodes={setNodes}
-            edges={edges}
-            setEdges={setEdges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-          />
-        </ReactFlowProvider>
+        <NodeSettingsContext.Provider value={nodeSettingsContextValue}>
+          <ReactFlowProvider>
+            <FlowCanvas
+              nodes={nodes}
+              setNodes={setNodes}
+              edges={edges}
+              setEdges={setEdges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+            />
+          </ReactFlowProvider>
+        </NodeSettingsContext.Provider>
       </main>
       <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      {settingsNodeId && (
+        <BlockSettingsModal
+          node={settingsNode}
+          onClose={() => setSettingsNodeId(null)}
+        />
+      )}
     </div>
   )
 }

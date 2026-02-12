@@ -4,7 +4,6 @@ import { FolderOpen, Plus, Save } from 'lucide-react'
 const API_BASE = import.meta.env.VITE_API_BASE || ''
 
 export const DEFAULT_PROJECT_NAME = 'my-default-agent'
-const DEFAULT_PROJECT_LABEL = 'My default agent'
 
 const SLUG_REGEX = /^[a-z0-9-]*$/
 function isValidProjectName(s: string): boolean {

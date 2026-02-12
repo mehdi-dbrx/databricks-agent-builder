@@ -17,6 +17,15 @@
 - Each block type (Agent, Genie, Vector Search, MCP) corresponds to an existing Databricks component.
 - The canvas block is the logical representation of that component; config and behavior map to Databricks APIs/resources.
 
+## Block (canvas node)
+
+- **Node component:** `BlockNode` renders each dropped block: block type icon, label, left/right handles for edges. Container is `relative`; content is one row (handle, icon, label, handle).
+- **Gear icon (settings):** Small Settings icon in the **top-right corner** of the block (`absolute top-0.5 right-0.5`). Shown on hover (`opacity-0 group-hover:opacity-100`). Same size as trash (`h-3 w-3`), minimal padding (`p-0.5`). Click opens the block settings modal; uses `NodeSettingsContext.openNodeSettings(nodeId)`.
+- **Trash icon (delete):** Trash2 icon in the top-right, **left of the gear**. Shown on hover. Click deletes the block via `useReactFlow().deleteElements({ nodes: [{ id }] })` (removes the node and its edges). Hover style: `hover:bg-red-50 hover:text-red-600` to signal destructive action.
+- **Icons container:** Gear and trash sit in a single `absolute` flex container (top-right) so they stay grouped and don’t overlap the label.
+- **Block settings modal:** Opened when the user clicks the gear. `BlockSettingsModal` receives the current node; title is “{Block type} settings”. **Content is different per block type** (e.g. Agent, Genie, Vector Search each get their own form/panel later); placeholder text per type for now (“… settings — content coming soon.”). Modal has overlay, centered panel, close (×) and overlay-click to close. `NodeSettingsContext` is provided in App; `settingsNodeId` state drives which node’s modal is open.
+- **Context:** `NodeSettingsContext` exposes `openNodeSettings(nodeId: string)`. Used by `BlockNode` only for the gear; modal is rendered in App and reads `nodes` to resolve the node by id and its `blockType` for the modal content.
+
 ## Projects and persistence
 
 - A project is saved and restored as a YAML file.
